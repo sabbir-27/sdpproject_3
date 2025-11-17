@@ -14,28 +14,28 @@ class ChatListScreen extends StatefulWidget {
 class _ChatListScreenState extends State<ChatListScreen> {
   final List<ChatContact> _chatContacts = [
     ChatContact(
-      name: 'John Doe',
+      name: 'Mimi',
       lastMessage: "That\'s great news! Thank you...",
       timestamp: DateTime.now(),
       imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
       isRead: false,
     ),
     ChatContact(
-      name: 'Jane Smith',
+      name: 'Sarlok',
       lastMessage: 'Can you check on order #54321?',
       timestamp: DateTime.now().subtract(const Duration(hours: 1)),
       imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704e',
       isRead: true,
     ),
     ChatContact(
-      name: 'Alex Johnson',
+      name: 'Tanny',
       lastMessage: 'Yes, it is available in blue.',
       timestamp: DateTime.now().subtract(const Duration(hours: 3)),
       imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704f',
       isRead: false,
     ),
      ChatContact(
-      name: 'Sarah Connor',
+      name: 'ASif',
       lastMessage: 'I\'ll be back.',
       timestamp: DateTime.now().subtract(const Duration(days: 1)),
       imageUrl: 'https://i.pravatar.cc/150?u=a042581f4e29026704a',

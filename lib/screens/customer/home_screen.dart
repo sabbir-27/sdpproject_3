@@ -16,28 +16,28 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   final List<Shop> shopData = [
-    const Shop(id: '1', name: 'Sabbir\'s Electronics', description: 'Latest gadgets and electronics.', rating: 4.5, distance: '1.2 km', imageUrl: 'assets/images/shop1.png', products: [
-      Product(id: '1', name: 'Wireless Mouse', price: 25.99, imageUrl: 'assets/images/pro1.png', stock: 50),
-      Product(id: '2', name: 'Bluetooth Keyboard', price: 45.50, imageUrl: 'assets/images/pro2.png', stock: 25),
+    const Shop(id: '1', name: 'Islam grocery', description: 'Latest gadgets and electronics.', rating: 4.5, distance: '1.2 km', imageUrl: 'assets/images/shop1.png', products: [
+      Product(id: '1', name: 'Grocery', price: 25.99, imageUrl: 'assets/images/pro1.png', stock: 50),
+      Product(id: '2', name: 'Capsicum', price: 45.50, imageUrl: 'assets/images/pro2.png', stock: 25),
     ]),
-    const Shop(id: '2', name: 'Green Grocers', description: 'Fresh and organic vegetables.', rating: 4.8, distance: '800 m', imageUrl: 'assets/images/shop2.png', products: [
-      Product(id: '3', name: 'USB-C Hub', price: 30.00, imageUrl: 'assets/images/pro3.png', stock: 0),
-      Product(id: '4', name: '4K Webcam', price: 89.99, imageUrl: 'assets/images/pro4.png', stock: 15),
+    const Shop(id: '2', name: 'Green store', description: 'Fresh and organic vegetables.', rating: 4.8, distance: '800 m', imageUrl: 'assets/images/shop2.png', products: [
+      Product(id: '3', name: '', price: 30.00, imageUrl: 'assets/images/pro3.png', stock: 0),
+      Product(id: '4', name: 'Tomato', price: 89.99, imageUrl: 'assets/images/tomatos.png', stock: 15),
     ]),
-    const Shop(id: '3', name: 'Bookworm Corner', description: 'A cozy place for book lovers.', rating: 4.7, distance: '2.5 km', imageUrl: 'assets/images/shop3.png', products: []),
-    const Shop(id: '4', name: 'The Gadget Hub', description: 'Your one-stop tech shop.', rating: 4.9, distance: '500 m', imageUrl: 'assets/images/shop4.png', products: []),
-    const Shop(id: '5', name: 'Fashion Forward', description: 'Trendy apparel and accessories.', rating: 4.6, distance: '3.1 km', imageUrl: 'assets/images/shop5.png', products: []),
+    const Shop(id: '3', name: 'Asif store', description: 'A cozy place for book lovers.', rating: 4.7, distance: '2.5 km', imageUrl: 'assets/images/shop3.png', products: []),
+    const Shop(id: '4', name: 'Mukta phermacy', description: 'Your one-stop tech shop.', rating: 4.9, distance: '500 m', imageUrl: 'assets/images/shop4.png', products: []),
+    const Shop(id: '5', name: 'Ghorer Bazar', description: 'Trendy apparel and accessories.', rating: 4.6, distance: '3.1 km', imageUrl: 'assets/images/shop5.png', products: []),
     const Shop(id: '6', name: 'Home Essentials', description: 'Everything for your home.', rating: 4.8, distance: '1.5 km', imageUrl: 'assets/images/shop6.png', products: []),
-    const Shop(id: '7', name: 'Pet Paradise', description: 'All you need for your furry friends.', rating: 4.9, distance: '2.2 km', imageUrl: 'assets/images/shop7.png', products: []),
-    const Shop(id: '8', name: 'The Artful Corner', description: 'Handmade crafts and art supplies.', rating: 4.7, distance: '4.0 km', imageUrl: 'assets/images/shop8.png', products: []),
-    const Shop(id: '9', name: 'Fitness Fuel', description: 'Supplements and gear for your workout.', rating: 4.6, distance: '1.8 km', imageUrl: 'assets/images/shop9.png', products: []),
-    const Shop(id: '10', name: 'Sweet Treats Bakery', description: 'Delicious cakes, pastries, and more.', rating: 4.9, distance: '900 m', imageUrl: 'assets/images/shop10.png', products: []),
+    const Shop(id: '7', name: 'Mr D.I.Y', description: 'All you need for your furry friends.', rating: 4.9, distance: '2.2 km', imageUrl: 'assets/images/shop7.png', products: []),
+    const Shop(id: '8', name: 'Sarlok Mart', description: 'Handmade crafts and art supplies.', rating: 4.7, distance: '4.0 km', imageUrl: 'assets/images/shop8.png', products: []),
+    const Shop(id: '9', name: 'Kids & Family', description: 'Supplements and gear for your workout.', rating: 4.6, distance: '1.8 km', imageUrl: 'assets/images/shop9.png', products: []),
+    const Shop(id: '10', name: 'sakib pharmacy', description: 'Delicious cakes, pastries, and more.', rating: 4.9, distance: '900 m', imageUrl: 'assets/images/shop10.png', products: []),
   ];
 
   final List<Shop> favoriteShops = [
-    const Shop(id: '4', name: 'The Gadget Hub', description: 'Your one-stop tech shop.', rating: 4.9, distance: '500 m', imageUrl: 'assets/images/shop4.png', products: []),
-    const Shop(id: '2', name: 'Green Grocers', description: 'Fresh and organic vegetables.', rating: 4.8, distance: '800 m', imageUrl: 'assets/images/shop2.png', products: []),
-    const Shop(id: '1', name: 'Sabbir\'s Electronics', description: 'Latest gadgets and electronics.', rating: 4.5, distance: '1.2 km', imageUrl: 'assets/images/shop1.png', products: []),
+    const Shop(id: '4', name: 'Mukta pharmacy', description: 'Your one-stop tech shop.', rating: 4.9, distance: '500 m', imageUrl: 'assets/images/shop4.png', products: []),
+    const Shop(id: '2', name: 'Green store', description: 'Fresh and organic vegetables.', rating: 4.8, distance: '800 m', imageUrl: 'assets/images/shop2.png', products: []),
+    const Shop(id: '1', name: 'Islam grocery', description: 'Latest gadgets and electronics.', rating: 4.5, distance: '1.2 km', imageUrl: 'assets/images/shop1.png', products: []),
   ];
 
   double _getClampedResponsiveSize(double contentWidth, {required double baseSize, double minSize = 0, double maxSize = double.infinity}) {

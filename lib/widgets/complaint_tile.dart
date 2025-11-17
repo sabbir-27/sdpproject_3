@@ -1,73 +1,96 @@
 import 'package:flutter/material.dart';
-import 'package:glassmorphism/glassmorphism.dart';
+import 'package:intl/intl.dart';
+import '../models/complaint.dart'; // Import the centralized model
 import '../theme/app_colors.dart';
 
-enum ComplaintStatus { New, InReview, Resolved, Assigned, Rejected, Pending }
+// The ComplaintStatus enum is now imported from the complaint.dart model.
 
 class ComplaintTile extends StatelessWidget {
   final String title;
   final String date;
   final ComplaintStatus status;
-  final bool hasVideo; // New property
+  final bool hasVideo;
 
   const ComplaintTile({
     super.key,
     required this.title,
     required this.date,
     required this.status,
-    this.hasVideo = false, // Default to false
+    this.hasVideo = false,
   });
+
+  @override
+  Widget build(BuildContext context) {
+    final Color statusColor = _getStatusColor(status);
+    final IconData statusIcon = _getStatusIcon(data: status);
+
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: statusColor.withOpacity(0.5), width: 1),
+      ),
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        leading: CircleAvatar(
+          backgroundColor: statusColor.withOpacity(0.1),
+          child: Icon(statusIcon, color: statusColor),
+        ),
+        title: Text(
+          title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 5.0),
+          child: Text(
+            'Reported on: $date',
+            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+          ),
+        ),
+        trailing: hasVideo
+            ? Icon(Icons.videocam, color: AppColors.accentPolice.withOpacity(0.7))
+            : null,
+        onTap: () {
+          // TODO: Implement complaint detail view navigation
+        },
+      ),
+    );
+  }
 
   Color _getStatusColor(ComplaintStatus status) {
     switch (status) {
       case ComplaintStatus.New:
-        return Colors.orange;
+        return AppColors.primary;
       case ComplaintStatus.InReview:
+        return AppColors.warning;
+      case ComplaintStatus.Assigned:
         return Colors.blueAccent;
       case ComplaintStatus.Resolved:
-        return Colors.green;
-      case ComplaintStatus.Assigned:
-        return AppColors.primary;
+        return AppColors.success;
       case ComplaintStatus.Rejected:
         return AppColors.error;
-      case ComplaintStatus.Pending:
-        return Colors.grey;
       default:
         return Colors.grey;
     }
   }
 
-  String _getStatusText(ComplaintStatus status) {
-    return status.toString().split('.').last.replaceAll('InReview', 'In Review');
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: GlassmorphicContainer(
-        width: double.infinity,
-        height: 80,
-        borderRadius: 16,
-        blur: 15,
-        border: 1,
-        linearGradient: LinearGradient(
-          colors: [Colors.white.withOpacity(0.2), Colors.white.withOpacity(0.3)],
-        ),
-        borderGradient: LinearGradient(
-          colors: [AppColors.primary.withOpacity(0.4), Colors.white.withOpacity(0.4)],
-        ),
-        child: ListTile(
-          leading: hasVideo ? const Icon(Icons.videocam_outlined, color: AppColors.accentPolice) : null,
-          title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-          subtitle: Text(date),
-          trailing: Chip(
-            label: Text(_getStatusText(status)),
-            backgroundColor: _getStatusColor(status),
-            labelStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-          ),
-        ),
-      ),
-    );
+  IconData _getStatusIcon({required ComplaintStatus data}) {
+    switch (data) {
+      case ComplaintStatus.New:
+        return Icons.new_releases_outlined;
+      case ComplaintStatus.InReview:
+        return Icons.hourglass_top_outlined;
+      case ComplaintStatus.Assigned:
+        return Icons.assignment_ind_outlined;
+      case ComplaintStatus.Resolved:
+        return Icons.check_circle_outline;
+      case ComplaintStatus.Rejected:
+        return Icons.cancel_outlined;
+      default:
+        return Icons.help_outline;
+    }
   }
 }

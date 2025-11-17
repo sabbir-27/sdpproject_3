@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../models/complaint.dart';
 import '../../models/shop.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/complaint_tile.dart';

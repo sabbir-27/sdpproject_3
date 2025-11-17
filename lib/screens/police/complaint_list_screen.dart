@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../../providers/complaint_provider.dart';
+import '../../models/complaint.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/complaint_tile.dart';
 
@@ -13,18 +16,11 @@ class ComplaintListScreen extends StatefulWidget {
 class _ComplaintListScreenState extends State<ComplaintListScreen> {
   ComplaintStatus? _selectedStatus;
 
-  // Dummy data for complaints
-  final List<ComplaintTile> allComplaints = const [
-    ComplaintTile(title: 'Illegal Parking Violation', date: '2024-07-28', status: ComplaintStatus.New, hasVideo: true),
-    ComplaintTile(title: 'Loud Noise Complaint', date: '2024-07-27', status: ComplaintStatus.InReview, hasVideo: false),
-    ComplaintTile(title: 'Public Disturbance', date: '2024-07-26', status: ComplaintStatus.New, hasVideo: true),
-    ComplaintTile(title: 'Resolved: Vandalism', date: '2024-07-25', status: ComplaintStatus.Resolved, hasVideo: false),
-    ComplaintTile(title: 'Rejected: False Report', date: '2024-07-24', status: ComplaintStatus.Rejected, hasVideo: false),
-    ComplaintTile(title: 'Assigned: Theft Report', date: '2024-07-23', status: ComplaintStatus.Assigned, hasVideo: true),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final complaintProvider = Provider.of<ComplaintProvider>(context);
+    final allComplaints = complaintProvider.complaints;
+
     final filteredComplaints = _selectedStatus == null
         ? allComplaints
         : allComplaints.where((c) => c.status == _selectedStatus).toList();
@@ -50,7 +46,13 @@ class _ComplaintListScreenState extends State<ComplaintListScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 itemCount: filteredComplaints.length,
                 itemBuilder: (context, index) {
-                  return filteredComplaints[index]
+                  final complaint = filteredComplaints[index];
+                  return ComplaintTile(
+                    title: complaint.description,
+                    date: complaint.date.toString(),
+                    status: complaint.status,
+                    hasVideo: complaint.attachments['Video'] != null,
+                  )
                       .animate()
                       .fadeIn(duration: 400.ms, delay: (100 * index).ms)
                       .slideY(begin: 0.2);

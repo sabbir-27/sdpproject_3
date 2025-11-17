@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/complaint.dart';
+import '../../providers/complaint_provider.dart';
 import '../../widgets/complaint_tile.dart';
 import '../../widgets/shop_owner_drawer.dart';
+import 'package:intl/intl.dart';
 
 class OwnerComplaintsScreen extends StatelessWidget {
-  const OwnerComplaintsScreen({super.key});
+  OwnerComplaintsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Dummy data for complaints
-    final List<Complaint> complaints = [
-      const Complaint(id: '1', customerName: 'John Doe', title: 'Late Delivery', description: 'The package was 3 days late.', status: ComplaintStatus.InReview, date: '2024-07-28'),
-      const Complaint(id: '2', customerName: 'Jane Smith', title: 'Damaged Item', description: 'The product arrived with a cracked screen.', status: ComplaintStatus.Resolved, date: '2024-07-25'),
-      const Complaint(id: '3', customerName: 'Peter Jones', title: 'Wrong Product Received', description: 'I received a different color than what I ordered.', status: ComplaintStatus.InReview, date: '2024-07-29'),
-    ];
+    // Get the complaints from the provider
+    final complaintProvider = Provider.of<ComplaintProvider>(context);
+    final List<Complaint> complaints = complaintProvider.complaints;
 
     return Scaffold(
       appBar: AppBar(
@@ -27,9 +27,12 @@ class OwnerComplaintsScreen extends StatelessWidget {
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: ComplaintTile(
-              title: complaint.title,
-              date: complaint.date,
+              // Use description for the title, as the model doesn't have a separate title
+              title: complaint.description,
+              // Format the DateTime to a more readable string
+              date: DateFormat('yyyy-MM-dd').format(complaint.date),
               status: complaint.status,
+              hasVideo: complaint.attachments['Video'] != null,
             ),
           );
         },

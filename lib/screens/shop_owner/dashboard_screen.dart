@@ -259,11 +259,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   Widget _buildRecentCustomersContent(BuildContext context) {
     final customers = {
-      'Amber': 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
-      'Nate': 'https://i.pravatar.cc/150?u=a042581f4e29026704e',
-      'Jahn': 'https://i.pravatar.cc/150?u=a042581f4e29026704f',
-      'Dishe': 'https://i.pravatar.cc/150?u=a042581f4e29026704a',
-      'Shakir': 'https://i.pravatar.cc/150?u=a042581f4e29026704b',
+      'Mimi': 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
+      'Sarlok': 'https://i.pravatar.cc/150?u=a042581f4e29026704e',
+      'Nusrat': 'https://i.pravatar.cc/150?u=a042581f4e29026704f',
+      'Asif': 'https://i.pravatar.cc/150?u=a042581f4e29026704a',
+      'Tanny': 'https://i.pravatar.cc/150?u=a042581f4e29026704b',
     };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -300,7 +300,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('\$84,920.54', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.textDark)),
+                  Text('\৳84,920.54 Tk', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: AppColors.textDark)),
                   Text('+14% increase', style: TextStyle(color: Colors.green, fontWeight: FontWeight.w600)),
                 ],
               ),
@@ -335,9 +335,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Today\'s Orders', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+        const Text('Today\'s Sales', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 12),
-        const Text('\$14,920.54', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.pink)),
+        const Text('\৳14,920.54 Tk', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.pink)),
         const SizedBox(height: 12),
         const Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -417,7 +417,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       children: [
         const Text('Historical Sales Stat', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4),
-        const Text('Since Jan 2022', style: TextStyle(color: Colors.grey, fontSize: 12)),
+        const Text('Since Jan 2025', style: TextStyle(color: Colors.grey, fontSize: 12)),
         const SizedBox(height: 24),
         SizedBox(
           height: 150,

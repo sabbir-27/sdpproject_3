@@ -33,13 +33,13 @@ class ShopDetailScreen extends StatelessWidget {
 
     // Dummy data for products
     final List<Product> products = [
-      const Product(id: '1', name: 'Wireless Mouse', price: 25.99, imageUrl: 'assets/images/pro1.png', stock: 50),
-      const Product(id: '2', name: 'Bluetooth Keyboard', price: 45.50, imageUrl: 'assets/images/pro2.png', stock: 25),
-      const Product(id: '3', name: 'USB-C Hub', price: 30.00, imageUrl: 'assets/images/pro3.png', stock: 0),
-      const Product(id: '4', name: '4K Webcam', price: 89.99, imageUrl: 'assets/images/pro4.png', stock: 15),
-       const Product(id: '5', name: 'Gaming Headset', price: 65.00, imageUrl: 'assets/images/pro5.png', stock: 5),
-      const Product(id: '6', name: 'Mechanical Keyboard', price: 120.00, imageUrl: 'assets/images/pro6.png', stock: 10),
-      const Product(id: '7', name: 'Monitor Stand', price: 35.00, imageUrl: 'assets/images/pro7.png', stock: 30),
+      const Product(id: '1', name: 'Grocery', price: 25.99, imageUrl: 'assets/images/pro1.png', stock: 50),
+      const Product(id: '2', name: 'Capsicum', price: 45.50, imageUrl: 'assets/images/pro2.png', stock: 25),
+      const Product(id: '3', name: 'Tomato', price: 30.00, imageUrl: 'assets/images/tomatos.png', stock: 0),
+      const Product(id: '4', name: 'Vegetable', price: 89.99, imageUrl: 'assets/images/pro4.png', stock: 15),
+       const Product(id: '5', name: 'Men shirt', price: 65.00, imageUrl: 'assets/images/pro5.png', stock: 5),
+      const Product(id: '6', name: 'orange', price: 120.00, imageUrl: 'assets/images/pro6.png', stock: 10),
+      const Product(id: '7', name: 'Laptop', price: 35.00, imageUrl: 'assets/images/laptop.png', stock: 30),
       const Product(id: '8', name: 'Laptop Sleeve', price: 19.99, imageUrl: 'assets/images/pro8.png', stock: 0),
     ];
 
@@ -48,7 +48,7 @@ class ShopDetailScreen extends StatelessWidget {
         child: Container(
           constraints: const BoxConstraints(maxWidth: maxWidth),
           decoration: const BoxDecoration(
-            gradient: LinearGradient(
+            gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [AppColors.gradientStart, AppColors.gradientEnd],
@@ -152,11 +152,55 @@ class ShopDetailScreen extends StatelessWidget {
     return Wrap(
       spacing: 12.0,
       runSpacing: 12.0,
-      alignment: WrapAlignment.spaceEvenly,
+      alignment: WrapAlignment.end,
       children: [
         _actionButton(context, icon: Icons.chat_bubble_outline, label: 'Chat', onPressed: () => Navigator.pushNamed(context, '/customer_chat'), contentWidth: contentWidth),
         _actionButton(context, icon: Icons.favorite_border, label: 'Follow', isOutlined: true, onPressed: () {}, contentWidth: contentWidth),
         _actionButton(context, icon: Icons.report_problem_outlined, label: 'Complaint', isOutlined: true, onPressed: () => Navigator.pushNamed(context, '/file_complaint'), contentWidth: contentWidth),
+        PopupMenuButton<String>(
+          onSelected: (value) {
+            Navigator.pushNamed(context, value);
+          },
+          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+            const PopupMenuItem<String>(
+              value: '/card_payment',
+              child: Text('Pay with Card'),
+            ),
+            const PopupMenuItem<String>(
+              value: '/bkash_payment',
+              child: Text('Pay with bKash'),
+            ),
+            const PopupMenuItem<String>(
+              value: '/nagad_payment',
+              child: Text('Pay with Nagad'),
+            ),
+          ],
+          child: Material(
+            color: AppColors.primary,
+            borderRadius: BorderRadius.circular(12.0),
+            elevation: 2,
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: _getClampedResponsiveSize(contentWidth, baseSize: 16, minSize: 12, maxSize: 24),
+                vertical: _getClampedResponsiveSize(contentWidth, baseSize: 10, minSize: 8, maxSize: 14),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.payment, color: Colors.white),
+                  const SizedBox(width: 8.0),
+                  Text(
+                    'Payment',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: _getClampedResponsiveSize(contentWidth, baseSize: 14, minSize: 12, maxSize: 16),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }

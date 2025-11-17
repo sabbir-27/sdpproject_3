@@ -1,20 +1,22 @@
+import 'package:flutter/material.dart';
 
-import '../widgets/complaint_tile.dart';
+// Enum for the status of the complaint
+enum ComplaintStatus { New, InReview, Assigned, Resolved, Rejected }
 
 class Complaint {
   final String id;
-  final String customerName;
-  final String title;
   final String description;
+  final DateTime date;
   final ComplaintStatus status;
-  final String date;
+  final Map<String, String?> attachments;
+  final bool escalatedToPolice;
 
-  const Complaint({
+  Complaint({
     required this.id,
-    required this.customerName,
-    required this.title,
     required this.description,
-    required this.status,
     required this.date,
+    this.status = ComplaintStatus.New,
+    this.attachments = const {},
+    this.escalatedToPolice = false,
   });
 }

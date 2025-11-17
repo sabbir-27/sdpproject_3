@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/product_provider.dart';
 import 'providers/accounting_store.dart';
+import 'providers/complaint_provider.dart'; // Import the new provider
 
 // --- Theme ---
 import 'theme/app_themes.dart';
@@ -55,6 +56,7 @@ import 'screens/police/police_notifications_screen.dart';
 import 'screens/police/system_health_screen.dart';
 import 'screens/police/shop_management_screen.dart';
 import 'screens/police/shop_details_for_police_screen.dart';
+import 'screens/police/resolved_complaint_list_screen.dart';
 
 void main() {
   runApp(const SmartShopConnectApp());
@@ -69,6 +71,7 @@ class SmartShopConnectApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => AccountingStore()),
+        ChangeNotifierProvider(create: (_) => ComplaintProvider()), // Add the provider
       ],
       child: MaterialApp(
         title: 'SmartShop Connect',
@@ -98,7 +101,7 @@ class SmartShopConnectApp extends StatelessWidget {
           '/orders': (_) => const OrdersScreen(),
           '/owner_chat': (_) => const ChatScreen(),
           '/owner_chat_list': (_) => const ChatListScreen(),
-          '/owner_complaints': (_) => const OwnerComplaintsScreen(),
+          '/owner_complaints': (_) => OwnerComplaintsScreen(), // Removed const
           '/owner_accounting': (_) => const AccountingScreen(),
           '/owner_charts': (_) => const ChartsScreen(),
           '/owner_trends': (_) => const TrendsScreen(),
@@ -116,6 +119,7 @@ class SmartShopConnectApp extends StatelessWidget {
           '/police_in_review_complaints': (_) => const InReviewComplaintListScreen(),
           '/police_assigned_complaints': (_) => const AssignedComplaintListScreen(),
           '/police_rejected_complaints': (_) => const RejectedComplaintListScreen(),
+          '/police_resolved_complaints': (_) => const ResolvedComplaintListScreen(),
           '/police_high_priority_complaints': (_) => const HighPriorityComplaintListScreen(),
           '/police_notifications': (_) => const PoliceNotificationsScreen(),
           '/police_system_health': (_) => const SystemHealthScreen(),

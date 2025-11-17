@@ -1,14 +1,17 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:fl_chart/fl_chart.dart';
 import 'package:intl/intl.dart';
-import '../../models/shop.dart';
-import '../../models/product.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:provider/provider.dart';
+
+import '../../models/complaint.dart';
+import '../../providers/complaint_provider.dart';
 import '../../theme/app_colors.dart';
-import '../../widgets/stat_card.dart';
 import '../../widgets/complaint_tile.dart';
 import '../../widgets/police_drawer.dart';
+import '../../widgets/stat_card.dart';
+import '../../models/shop.dart';
 
 class PoliceDashboardScreen extends StatefulWidget {
   const PoliceDashboardScreen({super.key});
@@ -22,32 +25,24 @@ class _PoliceDashboardScreenState extends State<PoliceDashboardScreen> {
   final TextEditingController _searchController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    _searchFocusNode.dispose();
-    super.dispose();
-  }
-
   void _toggleSearch() {
     setState(() {
       _isSearchActive = !_isSearchActive;
       if (_isSearchActive) {
         _searchFocusNode.requestFocus();
       } else {
-        _searchController.clear();
         _searchFocusNode.unfocus();
       }
     });
   }
 
   void _performSearch(String shopId) {
-    if (shopId.trim().isEmpty) return;
+    if (shopId.isEmpty) return;
 
     final searchedShop = Shop(
       id: shopId,
-      name: 'Shop #$shopId',
-      description: 'Details for shop fetched via ID search.',
+      name: 'Shop from ID search.',
+      description: 'Shop found via ID search.', // Added missing description
       rating: 4.2,
       distance: 'Unknown',
       imageUrl: 'https://picsum.photos/seed/$shopId/400/300',
@@ -234,13 +229,23 @@ class _PoliceDashboardScreenState extends State<PoliceDashboardScreen> {
   }
 
   Widget _buildComplaintStatusGrid(BuildContext context, {required int crossAxisCount, required double aspectRatio}) {
+    final complaintProvider = Provider.of<ComplaintProvider>(context);
+    final allComplaints = complaintProvider.complaints;
+
+    final total = allComplaints.length;
+    final pending = allComplaints.where((c) => c.status == ComplaintStatus.New).length;
+    final inReview = allComplaints.where((c) => c.status == ComplaintStatus.InReview).length;
+    final assigned = allComplaints.where((c) => c.status == ComplaintStatus.Assigned).length;
+    final resolved = allComplaints.where((c) => c.status == ComplaintStatus.Resolved).length;
+    final rejected = allComplaints.where((c) => c.status == ComplaintStatus.Rejected).length;
+
     final items = [
-      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_complaints'), child: const StatCard(title: 'Total', value: '48', color: AppColors.primary, icon: Icons.receipt_long, isSmall: true)),
-      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_pending_complaints'), child: const StatCard(title: 'Pending', value: '12', color: Colors.grey, icon: Icons.pending, isSmall: true)),
-      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_in_review_complaints'), child: const StatCard(title: 'In Review', value: '8', color: AppColors.warning, icon: Icons.hourglass_top, isSmall: true)),
-      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_assigned_complaints'), child: const StatCard(title: 'Assigned', value: '6', color: Colors.blueAccent, icon: Icons.assignment_ind, isSmall: true)),
-      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_resolved_complaints'), child: const StatCard(title: 'Resolved', value: '20', color: AppColors.success, icon: Icons.check_circle, isSmall: true)),
-      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_rejected_complaints'), child: const StatCard(title: 'Rejected', value: '2', color: AppColors.error, icon: Icons.cancel, isSmall: true)),
+      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_complaints'), child: StatCard(title: 'Total', value: total.toString(), color: AppColors.primary, icon: Icons.receipt_long, isSmall: true)),
+      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_pending_complaints'), child: StatCard(title: 'Pending', value: pending.toString(), color: Colors.grey, icon: Icons.pending, isSmall: true)),
+      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_in_review_complaints'), child: StatCard(title: 'In Review', value: inReview.toString(), color: AppColors.warning, icon: Icons.hourglass_top, isSmall: true)),
+      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_assigned_complaints'), child: StatCard(title: 'Assigned', value: assigned.toString(), color: Colors.blueAccent, icon: Icons.assignment_ind, isSmall: true)),
+      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_resolved_complaints'), child: StatCard(title: 'Resolved', value: resolved.toString(), color: AppColors.success, icon: Icons.check_circle, isSmall: true)),
+      GestureDetector(onTap: () => Navigator.pushNamed(context, '/police_rejected_complaints'), child: StatCard(title: 'Rejected', value: rejected.toString(), color: AppColors.error, icon: Icons.cancel, isSmall: true)),
     ];
 
     return GridView.count(
@@ -271,21 +276,21 @@ class _PoliceDashboardScreenState extends State<PoliceDashboardScreen> {
                 centerSpaceRadius: 40,
                 sections: [
                   PieChartSectionData(
-                    color: Colors.blue.shade400, // Updated Color
+                    color: AppColors.getPastelColor(0),
                     value: verifiedCount,
                     title: '${(verifiedCount / totalShops * 100).toStringAsFixed(0)}%',
                     radius: 50,
                     titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   PieChartSectionData(
-                    color: Colors.teal.shade400, // Updated Color
+                    color: AppColors.getPastelColor(1),
                     value: pendingCount,
                     title: '${(pendingCount / totalShops * 100).toStringAsFixed(0)}%',
                     radius: 50,
                     titleStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
                   ),
                   PieChartSectionData(
-                    color: Colors.purple.shade400, // Updated Color
+                    color: AppColors.getPastelColor(2),
                     value: suspendedCount,
                     title: '${(suspendedCount / totalShops * 100).toStringAsFixed(0)}%',
                     radius: 50,
@@ -299,9 +304,9 @@ class _PoliceDashboardScreenState extends State<PoliceDashboardScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _Indicator(color: Colors.blue.shade400, text: 'Verified'),
-              _Indicator(color: Colors.teal.shade400, text: 'Pending'),
-              _Indicator(color: Colors.purple.shade400, text: 'Suspended'),
+              _Indicator(color: AppColors.getPastelColor(0), text: 'Verified'),
+              _Indicator(color: AppColors.getPastelColor(1), text: 'Pending'),
+              _Indicator(color: AppColors.getPastelColor(2), text: 'Suspended'),
             ],
           ),
         ],
@@ -310,15 +315,31 @@ class _PoliceDashboardScreenState extends State<PoliceDashboardScreen> {
   }
 
   Widget _buildHighPriorityComplaints(BuildContext context) {
-    final complaints = [
-      const ComplaintTile(title: 'Illegal Parking Violation', date: '2024-07-28', status: ComplaintStatus.New, hasVideo: true),
-      const ComplaintTile(title: 'Loud Noise Complaint', date: '2024-07-27', status: ComplaintStatus.InReview, hasVideo: false),
-      const ComplaintTile(title: 'Public Disturbance', date: '2024-07-26', status: ComplaintStatus.New, hasVideo: true),
-    ];
+    final complaintProvider = Provider.of<ComplaintProvider>(context);
+    final complaints = complaintProvider.complaints.where((c) => c.escalatedToPolice).toList();
+
+    if (complaints.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 32.0),
+          child: Text('No high-priority complaints.', style: TextStyle(color: AppColors.textGrey)),
+        ),
+      );
+    }
+
+    final recentComplaints = complaints.take(3).toList();
 
     return Column(
-      children: complaints
-          .map((c) => GestureDetector(onTap: () => _showActionSheet(context, c.title), child: c))
+      children: recentComplaints
+          .map((c) => GestureDetector(
+                onTap: () => _showActionSheet(context, c.description),
+                child: ComplaintTile(
+                  title: c.description,
+                  date: DateFormat('d MMM yyyy').format(c.date),
+                  status: c.status,
+                  hasVideo: c.attachments['Video'] != null,
+                ),
+              ))
           .toList()
           .animate(interval: 200.ms)
           .fadeIn()

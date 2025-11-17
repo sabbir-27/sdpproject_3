@@ -20,11 +20,11 @@ class CustomerDrawer extends StatelessWidget {
           padding: EdgeInsets.zero,
           children: <Widget>[
             const UserAccountsDrawerHeader(
-              accountName: Text("John Doe", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              accountEmail: Text("john.doe@example.com"),
+              accountName: Text("Mimi", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              accountEmail: Text("mimi.doe@example.com"),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Text("J", style: TextStyle(fontSize: 40.0, color: AppColors.primary)),
+                child: Text("M", style: TextStyle(fontSize: 40.0, color: AppColors.primary)),
               ),
               decoration: BoxDecoration(
                 gradient: LinearGradient(

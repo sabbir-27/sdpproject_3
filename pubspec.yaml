@@ -27,6 +27,9 @@ dependencies:
   # 🚀 State management (lightweight)
   provider: ^6.1.2
   
+  # 📷 Image & File selection
+  file_picker: ^6.2.1 # Switched to file_picker for audio support
+
   # 📷 QR Code
   qr_flutter: ^4.1.0
 
