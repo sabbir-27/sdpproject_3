@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/product_provider.dart';
 import 'providers/accounting_store.dart';
-import 'providers/complaint_provider.dart'; // Import the new provider
+import 'providers/complaint_provider.dart';
+import 'providers/auth_provider.dart';
 
 // --- Theme ---
 import 'theme/app_themes.dart';
@@ -71,14 +72,15 @@ class SmartShopConnectApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ProductProvider()),
         ChangeNotifierProvider(create: (_) => AccountingStore()),
-        ChangeNotifierProvider(create: (_) => ComplaintProvider()), // Add the provider
+        ChangeNotifierProvider(create: (_) => ComplaintProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
         title: 'SmartShop Connect',
         debugShowCheckedModeBanner: false,
         theme: AppThemes.lightTheme,
 
-        initialRoute: '/login', // Set the initial page to the login screen
+        initialRoute: '/login', 
 
         routes: {
           '/login': (_) => const LoginScreen(),
@@ -101,7 +103,7 @@ class SmartShopConnectApp extends StatelessWidget {
           '/orders': (_) => const OrdersScreen(),
           '/owner_chat': (_) => const ChatScreen(),
           '/owner_chat_list': (_) => const ChatListScreen(),
-          '/owner_complaints': (_) => OwnerComplaintsScreen(), // Removed const
+          '/owner_complaints': (_) => OwnerComplaintsScreen(),
           '/owner_accounting': (_) => const AccountingScreen(),
           '/owner_charts': (_) => const ChartsScreen(),
           '/owner_trends': (_) => const TrendsScreen(),

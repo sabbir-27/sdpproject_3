@@ -1,5 +1,7 @@
 // lib/widgets/customer_drawer.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../theme/app_colors.dart';
 
 class CustomerDrawer extends StatelessWidget {
@@ -7,6 +9,10 @@ class CustomerDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final username = authProvider.username ?? 'Guest';
+    final email = authProvider.email ?? 'guest@example.com';
+
     return Drawer(
       child: Container(
         decoration: const BoxDecoration(
@@ -19,14 +25,17 @@ class CustomerDrawer extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const UserAccountsDrawerHeader(
-              accountName: Text("Mimi", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-              accountEmail: Text("mimi.doe@example.com"),
+            UserAccountsDrawerHeader(
+              accountName: Text(username, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+              accountEmail: Text(email),
               currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white,
-                child: Text("M", style: TextStyle(fontSize: 40.0, color: AppColors.primary)),
+                child: Text(
+                  username.isNotEmpty ? username[0].toUpperCase() : 'G', 
+                  style: const TextStyle(fontSize: 40.0, color: AppColors.primary)
+                ),
               ),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 gradient: LinearGradient(
                   colors: [AppColors.primary, AppColors.gradientEnd],
                   begin: Alignment.topLeft,
@@ -63,6 +72,7 @@ class CustomerDrawer extends StatelessWidget {
               leading: const Icon(Icons.logout, color: AppColors.accentPolice),
               title: const Text('Logout'),
               onTap: () {
+                authProvider.logout();
                 // Pop all routes until we get to the first one (/login)
                 Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
               },

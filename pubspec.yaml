@@ -28,10 +28,13 @@ dependencies:
   provider: ^6.1.2
   
   # 📷 Image & File selection
-  file_picker: ^6.2.1 # Switched to file_picker for audio support
+  file_picker: ^8.0.0 # Updated to a newer version
 
   # 📷 QR Code
   qr_flutter: ^4.1.0
+
+  # 🌐 Networking
+  http: ^1.2.1
 
 dev_dependencies:
   flutter_test:
