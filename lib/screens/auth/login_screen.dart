@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
+import '../../providers/auth_provider.dart';
 
-enum UserRole { customer, shopOwner, admin } // Added admin role
+enum UserRole { customer, shopOwner, admin }
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -17,42 +17,41 @@ class _LoginScreenState extends State<LoginScreen> {
   UserRole _selectedRole = UserRole.customer;
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _isLoading = false;
 
-  // API Login Logic
-  Future<void> _apiLogin() async {
+  Future<void> _login() async {
     final username = _usernameController.text;
     final password = _passwordController.text;
-    final role = _selectedRole.toString().split('.').last; // "customer", "shopOwner", or "admin"
+    final role = _selectedRole.toString().split('.').last;
 
     if (username.isEmpty || password.isEmpty) {
       _showErrorDialog('All fields are required.');
       return;
     }
 
-    // IMPORTANT: Replace with your actual server URL
-    final url = Uri.parse('http://localhost:3000/login');
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'username': username,
-          'password': password,
-          'role': role,
-        }),
-      );
+      final success = await Provider.of<AuthProvider>(context, listen: false)
+          .login(username, password, role);
 
-      final responseBody = jsonDecode(response.body);
-
-      if (response.statusCode == 200) {
-        // On success, navigate to the correct dashboard
-        _navigateToDashboard(responseBody['user']['role']);
+      if (success) {
+        if (!mounted) return;
+        final userRole = Provider.of<AuthProvider>(context, listen: false).role;
+        _navigateToDashboard(userRole ?? role);
       } else {
-        _showErrorDialog(responseBody['message'] ?? 'An unknown error occurred.');
+        _showErrorDialog('Login failed. Please check your credentials.');
       }
     } catch (e) {
-      _showErrorDialog('Could not connect to the server. Please try again later.');
+      _showErrorDialog('An error occurred. Please try again.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -68,7 +67,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacementNamed(context, '/police_dashboard');
         break;
       default:
-        _showErrorDialog('Invalid user role received from server.');
+        _showErrorDialog('Invalid user role received.');
     }
   }
 
@@ -120,14 +119,13 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   Text('Welcome', style: Theme.of(context).textTheme.headlineMedium),
                   const SizedBox(height: 32),
-                  // Role Selector
                   DropdownButtonFormField<UserRole>(
                     value: _selectedRole,
                     decoration: const InputDecoration(border: OutlineInputBorder(), labelText: 'Login as'),
                     items: const [
                       DropdownMenuItem(value: UserRole.customer, child: Text('Customer')),
                       DropdownMenuItem(value: UserRole.shopOwner, child: Text('Shop Owner')),
-                      DropdownMenuItem(value: UserRole.admin, child: Text('Admin')), // Added admin option
+                      DropdownMenuItem(value: UserRole.admin, child: Text('Admin')),
                     ],
                     onChanged: (UserRole? newValue) => setState(() => _selectedRole = newValue!),
                   ),
@@ -140,8 +138,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     width: double.infinity,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), backgroundColor: AppColors.primary, foregroundColor: Colors.white),
-                      child: const Text('Login', style: TextStyle(fontSize: 18)),
-                      onPressed: _apiLogin, // Call the API login function
+                      onPressed: _isLoading ? null : _login,
+                      child: _isLoading 
+                          ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                          : const Text('Login', style: TextStyle(fontSize: 18)),
                     ),
                   ),
                   const SizedBox(height: 16),

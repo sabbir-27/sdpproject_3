@@ -70,10 +70,13 @@ class SmartShopConnectApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ProductProvider()),
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProxyProvider<AuthProvider, ProductProvider>(
+          create: (_) => ProductProvider(null, []),
+          update: (context, auth, previous) => ProductProvider(auth, previous?.products ?? []),
+        ),
         ChangeNotifierProvider(create: (_) => AccountingStore()),
         ChangeNotifierProvider(create: (_) => ComplaintProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
       child: MaterialApp(
         title: 'SmartShop Connect',

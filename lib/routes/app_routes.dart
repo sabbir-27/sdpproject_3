@@ -10,6 +10,7 @@ import '../screens/shop_owner/chat_screen.dart';
 import '../screens/police/dashboard_screen.dart';
 import '../screens/police/map_screen.dart';
 import '../screens/police/report_screen.dart';
+import '../screens/customer/profile_screen.dart';
 
 class AppRoutes {
   static const String login = '/login';
@@ -23,6 +24,7 @@ class AppRoutes {
   static const String policeDashboard = '/police_dashboard';
   static const String policeMap = '/police_map';
   static const String policeReport = '/police_report';
+  static const String profile = '/profile';
 
   static Map<String, WidgetBuilder> get routes => {
         login: (_) => const LoginScreen(),
@@ -36,5 +38,6 @@ class AppRoutes {
         policeDashboard: (_) => const PoliceDashboardScreen(),
         policeMap: (_) => const PoliceMapScreen(),
         policeReport: (_) => const ReportScreen(),
+        profile: (_) => const ProfileScreen(),
       };
 }

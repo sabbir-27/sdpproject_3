@@ -1,8 +1,8 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:glassmorphism/glassmorphism.dart';
-import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import '../../theme/app_colors.dart';
+import '../../providers/auth_provider.dart';
 
 enum UserRole { customer, shopOwner, admin }
 
@@ -20,41 +20,54 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _shopNameController = TextEditingController();
   final _adminCodeController = TextEditingController();
+  bool _isLoading = false;
 
-  Future<void> _apiRegister() async {
+  Future<void> _register() async {
     final username = _usernameController.text;
     final email = _emailController.text;
     final password = _passwordController.text;
     final role = _selectedRole.toString().split('.').last;
+    final shopName = _selectedRole == UserRole.shopOwner ? _shopNameController.text : null;
+    final adminCode = _selectedRole == UserRole.admin ? _adminCodeController.text : null;
 
     if (username.isEmpty || email.isEmpty || password.isEmpty) {
       _showErrorDialog('Username, email, and password are required.');
       return;
     }
+    
+    if (_selectedRole == UserRole.shopOwner && (shopName == null || shopName.isEmpty)) {
+      _showErrorDialog('Shop Name is required for shop owners.');
+      return;
+    }
 
-    final url = Uri.parse('http://localhost:3000/register');
+    setState(() {
+      _isLoading = true;
+    });
 
     try {
-      final response = await http.post(
-        url,
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({
-          'username': username,
-          'email': email,
-          'password': password,
-          'role': role,
-        }),
+      final success = await Provider.of<AuthProvider>(context, listen: false).register(
+        username,
+        email,
+        password,
+        role,
+        shopName: shopName,
+        adminCode: adminCode,
       );
 
-      final responseBody = jsonDecode(response.body);
-
-      if (response.statusCode == 201) {
+      if (success) {
+        if (!mounted) return;
         _showSuccessDialog();
       } else {
-        _showErrorDialog(responseBody['message'] ?? 'An unknown error occurred.');
+        _showErrorDialog('Registration failed. Please try again.');
       }
     } catch (e) {
-      _showErrorDialog('Could not connect to the server. Please try again later.');
+      _showErrorDialog('An error occurred. Please try again later.');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -154,8 +167,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), backgroundColor: AppColors.primary, foregroundColor: Colors.white),
-                          child: const Text('Register', style: TextStyle(fontSize: 18)),
-                          onPressed: _apiRegister, 
+                          onPressed: _isLoading ? null : _register,
+                          child: _isLoading 
+                              ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) 
+                              : const Text('Register', style: TextStyle(fontSize: 18)),
                         ),
                       ),
                       const SizedBox(height: 16),

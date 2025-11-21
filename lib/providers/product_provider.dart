@@ -1,43 +1,106 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import '../models/product.dart';
+import 'auth_provider.dart';
 
 class ProductProvider with ChangeNotifier {
-  final List<Product> _products = [
-    Product(id: '1', name: 'Wireless Mouse', price: 25.99, imageUrl: 'assets/images/pro1.png', stock: 50, description: 'A comfortable and reliable wireless mouse.'),
-    Product(id: '2', name: 'Bluetooth Keyboard', price: 45.50, imageUrl: 'assets/images/pro2.png', stock: 25, description: 'A slim and stylish Bluetooth keyboard.'),
-    Product(id: '3', name: 'USB-C Hub', price: 30.00, imageUrl: 'assets/images/pro3.png', stock: 0, description: 'A versatile USB-C hub with multiple ports.'),
-    Product(id: '4', name: '4K Webcam', price: 89.99, imageUrl: 'assets/images/pro4.png', stock: 15, description: 'A high-quality 4K webcam for streaming and video calls.'),
-    Product(id: '5', name: 'Gaming Headset', price: 65.00, imageUrl: 'assets/images/pro5.png', stock: 5, description: 'A comfortable gaming headset with immersive sound.'),
-    Product(id: '6', name: 'Mechanical Keyboard', price: 120.00, imageUrl: 'assets/images/pro6.png', stock: 10, description: 'A durable mechanical keyboard with satisfying clicks.'),
-    Product(id: '7', name: 'Monitor Stand', price: 35.00, imageUrl: 'assets/images/pro7.png', stock: 30, description: 'An ergonomic monitor stand with adjustable height.'),
-    Product(id: '8', name: 'Laptop Sleeve', price: 19.99, imageUrl: 'assets/images/pro8.png', stock: 0, description: 'A protective sleeve for your laptop.'),
-  ];
+  final AuthProvider? authProvider;
+  List<Product> _products = [];
+
+  ProductProvider(this.authProvider, this._products);
 
   List<Product> get products => _products;
 
-  void addProduct(Product product) {
-    final newProduct = Product(
-      id: (_products.length + 1).toString(),
-      name: product.name,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      stock: product.stock,
-      description: product.description,
-    );
-    _products.add(newProduct);
-    notifyListeners();
-  }
+  String? get token => authProvider?.token;
 
-  void updateProduct(Product product) {
-    final index = _products.indexWhere((p) => p.id == product.id);
-    if (index != -1) {
-      _products[index] = product;
-      notifyListeners();
+  // IMPORTANT: Replace with your actual server URL
+  final String _baseUrl = 'http://localhost:3000';
+
+  Future<void> fetchProducts() async {
+    final url = Uri.parse('$_baseUrl/products');
+    try {
+      final response = await http.get(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+
+      if (response.statusCode == 200) {
+        final List<dynamic> productData = json.decode(response.body);
+        _products = productData.map((data) => Product.fromJson(data)).toList();
+        notifyListeners();
+      } else {
+        throw Exception('Failed to load products');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch products: $e');
     }
   }
 
-  void deleteProduct(String id) {
-    _products.removeWhere((p) => p.id == id);
-    notifyListeners();
+  Future<void> addProduct(Product product) async {
+    final url = Uri.parse('$_baseUrl/products');
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(product.toJson()),
+      );
+
+      if (response.statusCode == 201) {
+        final newProduct = Product.fromJson(json.decode(response.body));
+        _products.add(newProduct);
+        notifyListeners();
+      } else {
+        throw Exception('Failed to add product');
+      }
+    } catch (e) {
+      throw Exception('Failed to add product: $e');
+    }
+  }
+
+  Future<void> updateProduct(Product product) async {
+    final url = Uri.parse('$_baseUrl/products/${product.id}');
+    try {
+      final response = await http.put(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: json.encode(product.toJson()),
+      );
+
+      if (response.statusCode == 200) {
+        final index = _products.indexWhere((p) => p.id == product.id);
+        if (index != -1) {
+          _products[index] = product;
+          notifyListeners();
+        }
+      } else {
+        throw Exception('Failed to update product');
+      }
+    } catch (e) {
+      throw Exception('Failed to update product: $e');
+    }
+  }
+
+  Future<void> deleteProduct(String id) async {
+    final url = Uri.parse('$_baseUrl/products/$id');
+    try {
+      final response = await http.delete(url, headers: {
+        'Authorization': 'Bearer $token',
+      });
+
+      if (response.statusCode == 200) {
+        _products.removeWhere((p) => p.id == id);
+        notifyListeners();
+      } else {
+        throw Exception('Failed to delete product');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete product: $e');
+    }
   }
 }

@@ -11,7 +11,7 @@ class AddProductDialog extends StatefulWidget {
   const AddProductDialog({super.key, this.product});
 
   @override
-  _AddProductDialogState createState() => _AddProductDialogState();
+  State<AddProductDialog> createState() => _AddProductDialogState();
 }
 
 class _AddProductDialogState extends State<AddProductDialog> {
@@ -21,6 +21,7 @@ class _AddProductDialogState extends State<AddProductDialog> {
   double? price;
   int? stock;
   String? description;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -99,8 +100,12 @@ class _AddProductDialogState extends State<AddProductDialog> {
                             labelText: 'Price',
                             icon: Icons.attach_money,
                             keyboardType: TextInputType.number,
-                            validator: (value) => value == null || value.isEmpty ? 'Please enter a price' : null,
-                            onSaved: (value) => price = double.tryParse(value!),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) return 'Please enter a price';
+                              if (double.tryParse(value) == null) return 'Invalid price';
+                              return null;
+                            },
+                            onSaved: (value) => price = double.tryParse(value!) ?? 0.0,
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -110,8 +115,12 @@ class _AddProductDialogState extends State<AddProductDialog> {
                             labelText: 'Stock',
                             icon: Icons.inventory_2_outlined,
                             keyboardType: TextInputType.number,
-                            validator: (value) => value == null || value.isEmpty ? 'Please enter the stock' : null,
-                            onSaved: (value) => stock = int.tryParse(value!),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) return 'Please enter the stock';
+                              if (int.tryParse(value) == null) return 'Invalid number';
+                              return null;
+                            },
+                            onSaved: (value) => stock = int.tryParse(value!) ?? 0,
                           ),
                         ),
                       ],
@@ -125,9 +134,15 @@ class _AddProductDialogState extends State<AddProductDialog> {
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                       ),
-                      icon: const Icon(Icons.save),
-                      label: const Text('Save Product'),
-                      onPressed: _saveForm,
+                      icon: _isLoading
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                            )
+                          : const Icon(Icons.save),
+                      label: _isLoading ? const Text('Saving...') : const Text('Save Product'),
+                      onPressed: _isLoading ? null : _saveForm,
                     ),
                     const SizedBox(height: 10),
                     OutlinedButton(
@@ -150,26 +165,48 @@ class _AddProductDialogState extends State<AddProductDialog> {
     );
   }
 
-  void _saveForm() {
+  Future<void> _saveForm() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final productProvider = Provider.of<ProductProvider>(context, listen: false);
+      
+      setState(() {
+        _isLoading = true;
+      });
 
-      final product = Product(
-        id: widget.product?.id ?? DateTime.now().toIso8601String(),
-        name: name!,
-        price: price!,
-        imageUrl: imageUrl!,
-        stock: stock!,
-        description: description,
-      );
+      try {
+        final productProvider = Provider.of<ProductProvider>(context, listen: false);
 
-      if (widget.product == null) {
-        productProvider.addProduct(product);
-      } else {
-        productProvider.updateProduct(product);
+        final product = Product(
+          id: widget.product?.id ?? '', // Server will generate ID for new products
+          name: name!,
+          price: price!,
+          imageUrl: imageUrl!,
+          stock: stock!,
+          description: description,
+        );
+
+        if (widget.product == null) {
+          await productProvider.addProduct(product);
+        } else {
+          await productProvider.updateProduct(product);
+        }
+        
+        if (mounted) {
+          Navigator.of(context).pop();
+        }
+      } catch (error) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Failed to save product. Please try again.')),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
-      Navigator.of(context).pop();
     }
   }
 

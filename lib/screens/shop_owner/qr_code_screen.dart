@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:qr_flutter/qr_flutter.dart';
+import 'package:provider/provider.dart';
+import '../../providers/auth_provider.dart';
 import '../../theme/app_colors.dart';
 import '../../widgets/shop_owner_drawer.dart';
 
 class QrCodeScreen extends StatelessWidget {
   const QrCodeScreen({super.key});
 
-  // In a real app, this would be your shop's unique ID or URL.
-  final String shopData = "shop_id_12345";
-
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final String shopName = authProvider.username ?? "Your Shop";
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Shop QR Code'),
@@ -35,14 +36,18 @@ class QrCodeScreen extends StatelessWidget {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    QrImageView(
-                      data: shopData,
-                      version: QrVersions.auto,
-                      size: 250.0,
-                      embeddedImage: const AssetImage('assets/images/logo.png'), // Optional: Add your shop logo
-                      embeddedImageStyle: const QrEmbeddedImageStyle(
-                        size: Size(40, 40),
-                      ),
+                    Text(
+                      shopName,
+                      style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: AppColors.textDark),
+                    ),
+                    const SizedBox(height: 16),
+                    // Removed QR Code and replaced with the image directly
+                    Image.asset(
+                      'assets/images/sabbir.jpg',
+                      width: 320,
+                      height: 320,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => const Icon(Icons.image, size: 100),
                     ),
                     const SizedBox(height: 24),
                     const Text(
