@@ -10,8 +10,9 @@ class SystemHealthScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Live System Health'),
+        title: const Text('Live System Health', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.primary,
+        elevation: 0,
       ),
       drawer: const PoliceDrawer(),
       body: Container(

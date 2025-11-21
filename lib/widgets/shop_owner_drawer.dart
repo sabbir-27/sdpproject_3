@@ -18,14 +18,20 @@ class ShopOwnerDrawer extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            const UserAccountsDrawerHeader(
-              accountName: Text("Sabbir's Electronics", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
-              accountEmail: Text("owner@sabbirselectronics.com", style: TextStyle(color: Colors.white70)),
-              currentAccountPicture: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Text("S", style: TextStyle(fontSize: 40.0, color: AppColors.primary)),
+            UserAccountsDrawerHeader(
+              accountName: const Text("Sabbir's Electronics", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+              accountEmail: const Text("owner@sabbirselectronics.com", style: TextStyle(color: Colors.white70)),
+              currentAccountPicture: GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.pushNamed(context, '/profile');
+                },
+                child: const CircleAvatar(
+                  backgroundColor: Colors.white,
+                  child: Text("S", style: TextStyle(fontSize: 40.0, color: AppColors.primary)),
+                ),
               ),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppColors.primary,
               ),
             ),
@@ -38,7 +44,7 @@ class ShopOwnerDrawer extends StatelessWidget {
             _buildDrawerItem(context, icon: Icons.report_problem_outlined, text: 'Complaints', route: '/owner_complaints'),
             const Divider(),
             _buildDrawerItem(context, icon: Icons.account_balance_wallet_outlined, text: 'Accounting', route: '/owner_accounting'),
-            _buildDrawerItem(context, icon: Icons.manage_accounts_outlined, text: 'Account Settings', route: '/owner_dashboard'), // Placeholder
+            _buildDrawerItem(context, icon: Icons.settings_outlined, text: 'Settings', route: '/owner_settings'), 
             const Divider(),
             ListTile(
               leading: const Icon(Icons.logout, color: Colors.redAccent),

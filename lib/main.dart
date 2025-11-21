@@ -26,6 +26,7 @@ import 'screens/customer/bkash_payment_screen.dart';
 import 'screens/customer/card_payment_screen.dart';
 import 'screens/customer/nagad_payment_screen.dart';
 import 'screens/customer/rocket_payment_screen.dart';
+import 'screens/customer/profile_screen.dart'; // Imported ProfileScreen
 
 // --- Shop Owner Screens ---
 import 'screens/shop_owner/dashboard_screen.dart' as owner;
@@ -38,6 +39,7 @@ import 'screens/shop_owner/accounting_screen.dart';
 import 'screens/shop_owner/charts_screen.dart';
 import 'screens/shop_owner/trends_screen.dart';
 import 'screens/shop_owner/qr_code_screen.dart';
+import 'screens/shop_owner/settings_screen.dart'; // Imported SettingsScreen
 
 // --- Police Screens ---
 import 'screens/police/dashboard_screen.dart' as police;
@@ -101,6 +103,8 @@ class SmartShopConnectApp extends StatelessWidget {
           '/qr_scanner': (_) => const QrScannerScreen(),
           '/notifications': (_) => const NotificationsScreen(),
           '/favorites': (_) => const FavoritesScreen(),
+          '/profile': (_) => const ProfileScreen(), // Added Profile Route
+
           '/owner_dashboard': (_) => const owner.DashboardScreen(),
           '/products': (_) => const ProductsScreen(),
           '/orders': (_) => const OrdersScreen(),
@@ -111,6 +115,7 @@ class SmartShopConnectApp extends StatelessWidget {
           '/owner_charts': (_) => const ChartsScreen(),
           '/owner_trends': (_) => const TrendsScreen(),
           '/owner_qr_code': (_) => const QrCodeScreen(),
+          '/owner_settings': (_) => const SettingsScreen(), // Added Settings Route
 
           '/police_dashboard': (_) => const police.PoliceDashboardScreen(),
           '/police_map': (_) => const PoliceMapScreen(),

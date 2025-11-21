@@ -7,6 +7,8 @@ import '../screens/customer/complaint_screen.dart';
 import '../screens/shop_owner/dashboard_screen.dart';
 import '../screens/shop_owner/products_screen.dart';
 import '../screens/shop_owner/chat_screen.dart';
+import '../screens/shop_owner/qr_code_screen.dart';
+import '../screens/shop_owner/settings_screen.dart';
 import '../screens/police/dashboard_screen.dart';
 import '../screens/police/map_screen.dart';
 import '../screens/police/report_screen.dart';
@@ -21,6 +23,8 @@ class AppRoutes {
   static const String ownerDashboard = '/owner_dashboard';
   static const String products = '/products';
   static const String ownerChat = '/owner_chat';
+  static const String ownerQrCode = '/owner_qr_code';
+  static const String ownerSettings = '/owner_settings';
   static const String policeDashboard = '/police_dashboard';
   static const String policeMap = '/police_map';
   static const String policeReport = '/police_report';
@@ -35,6 +39,8 @@ class AppRoutes {
         ownerDashboard: (_) => const DashboardScreen(),
         products: (_) => const ProductsScreen(),
         ownerChat: (_) => const ChatScreen(),
+        ownerQrCode: (_) => const QrCodeScreen(),
+        ownerSettings: (_) => const SettingsScreen(),
         policeDashboard: (_) => const PoliceDashboardScreen(),
         policeMap: (_) => const PoliceMapScreen(),
         policeReport: (_) => const ReportScreen(),

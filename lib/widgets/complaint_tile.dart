@@ -10,6 +10,8 @@ class ComplaintTile extends StatelessWidget {
   final String date;
   final ComplaintStatus status;
   final bool hasVideo;
+  final bool hasAudio;
+  final bool hasImage;
 
   const ComplaintTile({
     super.key,
@@ -17,6 +19,8 @@ class ComplaintTile extends StatelessWidget {
     required this.date,
     required this.status,
     this.hasVideo = false,
+    this.hasAudio = false,
+    this.hasImage = false,
   });
 
   @override
@@ -50,13 +54,26 @@ class ComplaintTile extends StatelessWidget {
             style: TextStyle(color: Colors.grey[600], fontSize: 12),
           ),
         ),
-        trailing: hasVideo
-            ? Icon(Icons.videocam, color: AppColors.accentPolice.withOpacity(0.7))
-            : null,
+        trailing: _buildAttachmentIcons(),
         onTap: () {
           // TODO: Implement complaint detail view navigation
         },
       ),
+    );
+  }
+
+  // Helper to build the row of attachment icons
+  Widget? _buildAttachmentIcons() {
+    if (!hasVideo && !hasAudio && !hasImage) {
+      return null;
+    }
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (hasImage) Icon(Icons.image, color: Colors.grey[600]),
+        if (hasAudio) Icon(Icons.mic, color: Colors.grey[600]),
+        if (hasVideo) Icon(Icons.videocam, color: Colors.grey[600]),
+      ],
     );
   }
 

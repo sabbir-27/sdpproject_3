@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../../theme/app_colors.dart';
+import '../../widgets/police_drawer.dart';
 
 // Dummy User Model
 class User {
@@ -35,9 +37,11 @@ class UserListScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const PoliceDrawer(), // Added Drawer as requested
       appBar: AppBar(
-        title: const Text('All Users'),
+        title: const Text('All Users', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         backgroundColor: AppColors.primary,
+        elevation: 0,
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -48,27 +52,34 @@ class UserListScreen extends StatelessWidget {
           ),
         ),
         child: ListView.separated(
+          padding: const EdgeInsets.all(16),
           itemCount: users.length,
-          separatorBuilder: (context, index) => const Divider(indent: 80, height: 1),
+          separatorBuilder: (context, index) => const SizedBox(height: 12),
           itemBuilder: (context, index) {
             final user = users[index];
             final bool isShopOwner = user.userType == 'Shop Owner';
-            return ListTile(
-              leading: CircleAvatar(
-                radius: 28,
-                backgroundImage: NetworkImage(user.imageUrl),
-              ),
-              title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-              subtitle: Text(user.email),
-              trailing: Chip(
-                label: Text(
-                  user.userType,
-                  style: const TextStyle(color: Colors.white, fontSize: 10),
+            return Card(
+              elevation: 2,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                leading: CircleAvatar(
+                  radius: 28,
+                  backgroundImage: NetworkImage(user.imageUrl),
+                  backgroundColor: Colors.grey[200],
                 ),
-                backgroundColor: isShopOwner ? AppColors.accentShopOwner : Colors.blue,
-                padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                title: Text(user.name, style: const TextStyle(fontWeight: FontWeight.bold)),
+                subtitle: Text(user.email),
+                trailing: Chip(
+                  label: Text(
+                    user.userType,
+                    style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                  ),
+                  backgroundColor: isShopOwner ? AppColors.accentShopOwner : AppColors.primary,
+                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                ),
               ),
-            );
+            ).animate().fadeIn(duration: 400.ms, delay: (100 * index).ms).slideX(begin: 0.1);
           },
         ),
       ),

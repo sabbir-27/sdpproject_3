@@ -31,7 +31,7 @@ class PoliceDrawer extends StatelessWidget {
           ),
           _buildDrawerItem(context, icon: Icons.group_outlined, text: 'User Management', route: '/police_users'),
           _buildDrawerItem(context, icon: Icons.store_outlined, text: 'Shop Management', route: '/police_shops'),
-          _buildDrawerItem(context, icon: Icons.flag_outlined, text: 'All Complaints', route: '/police_complaints'),
+          _buildDrawerItem(context, icon: Icons.flag_outlined, text: 'Complaints Management ', route: '/police_complaints'),
           _buildDrawerItem(context, icon: Icons.monitor_heart_outlined, text: 'System Health', route: '/police_system_health'),
           const Divider(),
           ListTile(
