@@ -7,7 +7,7 @@ import '../../widgets/shop_owner_drawer.dart';
 import 'package:intl/intl.dart';
 
 class OwnerComplaintsScreen extends StatelessWidget {
-  OwnerComplaintsScreen({super.key});
+  const OwnerComplaintsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +33,8 @@ class OwnerComplaintsScreen extends StatelessWidget {
               date: DateFormat('yyyy-MM-dd').format(complaint.date),
               status: complaint.status,
               hasVideo: complaint.attachments['Video'] != null,
+              hasAudio: complaint.attachments['Audio'] != null,
+              hasImage: complaint.attachments['Image'] != null,
             ),
           );
         },

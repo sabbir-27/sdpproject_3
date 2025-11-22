@@ -1,12 +1,29 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../models/product.dart';
 import '../../models/shop.dart'; // Import the shop model
+import '../../providers/product_provider.dart';
 import '../../theme/app_colors.dart';
 
-class ShopDetailScreen extends StatelessWidget {
+class ShopDetailScreen extends StatefulWidget {
   const ShopDetailScreen({super.key});
+
+  @override
+  State<ShopDetailScreen> createState() => _ShopDetailScreenState();
+}
+
+class _ShopDetailScreenState extends State<ShopDetailScreen> {
+  
+  @override
+  void initState() {
+    super.initState();
+    // Fetch products when the screen loads
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<ProductProvider>(context, listen: false).fetchProducts();
+    });
+  }
 
   // Helper for smart, clamped responsive sizing
   double _getClampedResponsiveSize(
@@ -31,24 +48,12 @@ class ShopDetailScreen extends StatelessWidget {
     const double maxWidth = 1200.0;
     final double contentWidth = min(screenWidth, maxWidth);
 
-    // Dummy data for products
-    final List<Product> products = [
-      const Product(id: '1', name: 'Grocery', price: 25.99, imageUrl: 'assets/images/pro1.png', stock: 50),
-      const Product(id: '2', name: 'Capsicum', price: 45.50, imageUrl: 'assets/images/pro2.png', stock: 25),
-      const Product(id: '3', name: 'Tomato', price: 30.00, imageUrl: 'assets/images/tomatos.png', stock: 0),
-      const Product(id: '4', name: 'Vegetable', price: 89.99, imageUrl: 'assets/images/pro4.png', stock: 15),
-       const Product(id: '5', name: 'Men shirt', price: 65.00, imageUrl: 'assets/images/pro5.png', stock: 5),
-      const Product(id: '6', name: 'orange', price: 120.00, imageUrl: 'assets/images/pro6.png', stock: 10),
-      const Product(id: '7', name: 'Laptop', price: 35.00, imageUrl: 'assets/images/laptop.png', stock: 30),
-      const Product(id: '8', name: 'Laptop Sleeve', price: 19.99, imageUrl: 'assets/images/pro8.png', stock: 0),
-    ];
-
     return Scaffold(
       body: Center(
         child: Container(
           constraints: const BoxConstraints(maxWidth: maxWidth),
           decoration: const BoxDecoration(
-            gradient: const LinearGradient(
+            gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
               colors: [AppColors.gradientStart, AppColors.gradientEnd],
@@ -85,7 +90,7 @@ class ShopDetailScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              _buildProductGrid(contentWidth, products),
+              _buildProductGrid(contentWidth),
             ],
           ),
         ),
@@ -231,36 +236,52 @@ class ShopDetailScreen extends StatelessWidget {
         : ElevatedButton.icon(icon: Icon(icon), label: Text(label), style: buttonStyle, onPressed: onPressed);
   }
 
-    Widget _buildProductGrid(double contentWidth, List<Product> products) {
-    // Determine the number of columns based on content width
-    int crossAxisCount;
-    if (contentWidth >= 900) {
-      crossAxisCount = 4;
-    } else if (contentWidth >= 600) {
-      crossAxisCount = 3;
-    } else {
-      crossAxisCount = 2;
-    }
+    Widget _buildProductGrid(double contentWidth) {
+    // Use Consumer to get products from the provider
+    return Consumer<ProductProvider>(
+      builder: (context, productProvider, _) {
+        final products = productProvider.products;
+        
+        // Determine the number of columns based on content width
+        int crossAxisCount;
+        if (contentWidth >= 900) {
+          crossAxisCount = 4;
+        } else if (contentWidth >= 600) {
+          crossAxisCount = 3;
+        } else {
+          crossAxisCount = 2;
+        }
 
-    // Adjust aspect ratio for a pleasant card look
-    final double childAspectRatio = contentWidth < 600 ? 0.7 : 0.8;
+        // Adjust aspect ratio for a pleasant card look
+        final double childAspectRatio = contentWidth < 600 ? 0.7 : 0.8;
 
-    return SliverPadding(
-      padding: const EdgeInsets.all(16.0),
-      sliver: SliverGrid(
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: crossAxisCount,
-          childAspectRatio: childAspectRatio,
-          crossAxisSpacing: 16,
-          mainAxisSpacing: 16,
-        ),
-        delegate: SliverChildBuilderDelegate(
-          (context, index) {
-            return _buildProductCard(context, products[index], contentWidth);
-          },
-          childCount: products.length,
-        ),
-      ),
+        if (products.isEmpty) {
+          return const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.all(32.0),
+              child: Center(child: Text("No products available from this shop.")),
+            ),
+          );
+        }
+
+        return SliverPadding(
+          padding: const EdgeInsets.all(16.0),
+          sliver: SliverGrid(
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              childAspectRatio: childAspectRatio,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                return _buildProductCard(context, products[index], contentWidth);
+              },
+              childCount: products.length,
+            ),
+          ),
+        );
+      }
     );
   }
 
@@ -276,7 +297,7 @@ class ShopDetailScreen extends StatelessWidget {
           children: [
             Expanded(
               flex: 3,
-              child: Image.asset(
+              child: Image.network(
                 product.imageUrl,
                 fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
@@ -306,7 +327,7 @@ class ShopDetailScreen extends StatelessWidget {
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          '\$${product.price}',
+                          '৳ ${product.price}',
                           style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: _getClampedResponsiveSize(contentWidth, baseSize: 14, minSize: 12, maxSize: 17)),
                         ),
                       ],

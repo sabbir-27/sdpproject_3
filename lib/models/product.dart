@@ -6,6 +6,7 @@ class Product {
   final int stock;
   final String? description;
 
+  // Const constructor
   const Product({
     required this.id,
     required this.name,
@@ -17,22 +18,21 @@ class Product {
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
-      id: (json['id'] ?? json['_id'] ?? '').toString(),
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
       name: json['name'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       imageUrl: json['imageUrl'] ?? '',
-      stock: (json['stock'] ?? json['quantity']) as int? ?? 0,
+      stock: (json['stock'] ?? json['quantity'] ?? 0) as int,
       description: json['description'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
       'name': name,
       'price': price,
       'imageUrl': imageUrl,
-      'quantity': stock,
+      'stock': stock,
       'description': description,
     };
   }

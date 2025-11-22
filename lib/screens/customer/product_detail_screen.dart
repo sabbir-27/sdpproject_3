@@ -99,9 +99,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       elevation: 6.0,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       clipBehavior: Clip.antiAlias,
-      child: Image.asset(
-        product.imageUrl,
-        fit: BoxFit.cover,
+      child: AspectRatio(
+        aspectRatio: 1.0, // Square image or whatever fits best
+        child: Image.network(
+          product.imageUrl,
+          fit: BoxFit.cover,
+          errorBuilder: (context, error, stackTrace) {
+            // Fallback if network fails (e.g., it's an asset path or invalid URL)
+            return Image.asset(
+              product.imageUrl,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) => Container(
+                color: Colors.grey[200],
+                child: const Center(child: Icon(Icons.broken_image, size: 50, color: Colors.grey)),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -120,7 +134,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           ),
           const SizedBox(height: 16),
           Text(
-            '\$${product.price}',
+            '৳ ${product.price}',
             style: isWide ? textTheme.headlineMedium?.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold) : textTheme.headlineSmall?.copyWith(color: AppColors.primary, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 16),
@@ -128,7 +142,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           const SizedBox(height: 32),
           Text('Description', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          Text('Experience crystal-clear video with this professional-grade 4K webcam. Featuring a high-quality sensor for superior low-light performance, a wide-angle lens, and dual noise-cancelling microphones, it\'s perfect for streaming, video conferencing, and content creation. Plug-and-play setup via USB-C.', style: textTheme.bodyLarge?.copyWith(height: 1.5)),
+          Text(product.description ?? 'No description available.', style: textTheme.bodyLarge?.copyWith(height: 1.5)),
           const SizedBox(height: 32),
           _buildQuantitySelector(),
           const SizedBox(height: 32),
