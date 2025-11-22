@@ -5,7 +5,6 @@ class Product {
   final String imageUrl;
   final int stock;
   final String? description;
-  final String category;
 
   // Const constructor
   const Product({
@@ -15,7 +14,6 @@ class Product {
     required this.imageUrl,
     required this.stock,
     this.description,
-    this.category = 'General',
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -24,10 +22,9 @@ class Product {
       name: json['name'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
       imageUrl: json['imageUrl'] ?? json['image'] ?? '',
-      // Handle both 'stock' and 'quantity' from backend response
+      // Robustly handle stock/quantity
       stock: (json['stock'] ?? json['quantity'] ?? 0) as int,
       description: json['description'],
-      category: json['category'] ?? 'General',
     );
   }
 
@@ -35,14 +32,10 @@ class Product {
     return {
       'name': name,
       'price': price,
-      // Sending BOTH stock and quantity to satisfy whichever schema is active
-      'stock': stock, 
-      'quantity': stock,
+      'stock': stock,
+      'quantity': stock, // Sending both to ensure compatibility with backend variants
       'description': description,
       'imageUrl': imageUrl,
-      // Extra fields that might be harmless but good for compatibility if schema changes back
-      'category': category,
-      'image': imageUrl,
     };
   }
 }

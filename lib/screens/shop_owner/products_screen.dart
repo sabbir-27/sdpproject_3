@@ -256,11 +256,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
         child: Center(child: Text('No products match your search', style: TextStyle(color: Colors.grey))),
       );
     }
+    
+    // Responsive Grid Logic
+    final screenWidth = MediaQuery.of(context).size.width;
+    // Calculate columns: starts at 2, adds 1 column for every ~180px of extra width
+    final int crossAxisCount = (screenWidth / 180).floor().clamp(2, 6);
+    
     return SliverPadding(
       padding: const EdgeInsets.all(16.0),
       sliver: SliverGrid(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: crossAxisCount,
           childAspectRatio: 0.75,
           crossAxisSpacing: 12,
           mainAxisSpacing: 12,
@@ -468,7 +474,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
       }
     } catch (error) {
       if (mounted) {
+        // Clean up error message to be user-friendly
+        String msg = error.toString().replaceAll('Exception: ', '');
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Failed to delete'), backgroundColor: AppColors.error));
+        // Show detailed error in a dialog for better debugging if needed, or just log it.
+        print(msg); 
       }
     }
   }
@@ -487,25 +497,65 @@ class _ProductsScreenState extends State<ProductsScreen> {
             color: Colors.white,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
-          child: ListView(
-            controller: controller,
-            padding: const EdgeInsets.all(24),
+          child: Stack( // Added Stack to position actions
             children: [
-              Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20), decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Image.network(product.imageUrl, height: 250, width: double.infinity, fit: BoxFit.cover, errorBuilder: (c, e, s) => Container(height: 250, color: Colors.grey[100], child: const Icon(Icons.image, size: 50))),
+              ListView(
+                controller: controller,
+                padding: const EdgeInsets.fromLTRB(24, 24, 24, 80), // Extra padding at bottom for actions
+                children: [
+                  Center(child: Container(width: 40, height: 4, margin: const EdgeInsets.only(bottom: 20), decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(2)))),
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(product.imageUrl, height: 250, width: double.infinity, fit: BoxFit.cover, errorBuilder: (c, e, s) => Container(height: 250, color: Colors.grey[100], child: const Icon(Icons.image, size: 50))),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(child: Text(product.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textDark))),
+                      _buildPopupMenu(product), // Added Popup Menu here too
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text('৳ ${product.price}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary)),
+                  const SizedBox(height: 16),
+                  Wrap(spacing: 8, children: [Chip(avatar: Icon(Icons.inventory_2_outlined, size: 16, color: Colors.grey[700]), label: Text('${product.stock} in stock', style: const TextStyle(fontSize: 12)), backgroundColor: Colors.grey[100], side: BorderSide.none)]),
+                  const SizedBox(height: 24),
+                  const Text('Description', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 8),
+                  Text(product.description ?? 'No description available.', style: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.5)),
+                ],
               ),
-              const SizedBox(height: 24),
-              Text(product.name, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: AppColors.textDark)),
-              const SizedBox(height: 8),
-              Text('৳ ${product.price}', style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.primary)),
-              const SizedBox(height: 16),
-              Wrap(spacing: 8, children: [Chip(avatar: Icon(Icons.inventory_2_outlined, size: 16, color: Colors.grey[700]), label: Text('${product.stock} in stock', style: const TextStyle(fontSize: 12)), backgroundColor: Colors.grey[100], side: BorderSide.none)]),
-              const SizedBox(height: 24),
-              const Text('Description', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              const SizedBox(height: 8),
-              Text(product.description ?? 'No description available.', style: const TextStyle(fontSize: 15, color: Colors.black87, height: 1.5)),
+              Positioned(
+                left: 24,
+                right: 24,
+                bottom: 24,
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                          showDialog(context: context, builder: (_) => AddProductDialog(product: product));
+                        },
+                        style: OutlinedButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16), side: BorderSide(color: Colors.grey.shade300), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                        child: const Text('Edit', style: TextStyle(color: AppColors.textDark)),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context); // Close sheet first
+                          _confirmDelete(context, product);
+                        },
+                        style: ElevatedButton.styleFrom(backgroundColor: AppColors.error, padding: const EdgeInsets.symmetric(vertical: 16), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+                        child: const Text('Delete', style: TextStyle(color: Colors.white)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

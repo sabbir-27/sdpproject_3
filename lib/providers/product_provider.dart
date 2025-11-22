@@ -44,8 +44,7 @@ class ProductProvider with ChangeNotifier {
         } else if (responseData is Map && responseData['data'] != null) {
           productData = responseData['data'];
         } else if (responseData is Map) {
-           // Fallback if it's a map but no 'data' key (unlikely if list expected)
-           // You might want to log this
+           // Fallback if it's a map but no 'data' key
         }
             
         _products = productData.map((data) => Product.fromJson(data)).toList();
@@ -68,7 +67,7 @@ class ProductProvider with ChangeNotifier {
     try {
       print('Adding product to $url');
       final body = json.encode(product.toJson());
-      print('Request Body: $body'); // Debug print
+      print('Request Body: $body'); 
 
       final response = await http.post(
         url,
@@ -81,7 +80,6 @@ class ProductProvider with ChangeNotifier {
 
       if (response.statusCode == 201) {
         final dynamic responseData = json.decode(response.body);
-        // Handle wrapped 'data' or direct object
         final productJson = (responseData is Map && responseData.containsKey('data')) 
             ? responseData['data'] 
             : responseData;
@@ -91,12 +89,10 @@ class ProductProvider with ChangeNotifier {
         notifyListeners();
       } else {
         print('Failed to add product: ${response.statusCode} ${response.body}');
-        // Throw detailed error message to display in UI
         throw Exception('Failed to add product: ${response.body}');
       }
     } catch (e) {
       print('Error adding product: $e');
-      // Re-throw so UI can catch it
       throw e;
     }
   }
@@ -129,9 +125,11 @@ class ProductProvider with ChangeNotifier {
           notifyListeners();
         }
       } else {
-        throw Exception('Failed to update product');
+        print('Failed to update product: ${response.statusCode} ${response.body}');
+        throw Exception('Failed to update product: ${response.body}');
       }
     } catch (e) {
+      print('Error updating product: $e');
       throw Exception('Failed to update product: $e');
     }
   }
@@ -140,20 +138,38 @@ class ProductProvider with ChangeNotifier {
   // DELETE PRODUCT
   // -----------------------------
   Future<void> deleteProduct(String id) async {
+    if (id.isEmpty) {
+      print('Error: Cannot delete product with empty ID');
+      throw Exception('Cannot delete product with empty ID');
+    }
+
     final url = Uri.parse('$_baseUrl/products/$id');
     try {
+      print('Deleting product ID: $id at URL: $url');
+      print('Token available: ${token != null}');
+      
       final response = await http.delete(url, headers: {
+        'Content-Type': 'application/json', 
         if (token != null) 'Authorization': 'Bearer $token',
       });
 
-      if (response.statusCode == 200) {
+      print('Delete response status: ${response.statusCode}');
+
+      // Check for 200 OK or 204 No Content
+      if (response.statusCode == 200 || response.statusCode == 204) {
         _products.removeWhere((p) => p.id == id);
         notifyListeners();
       } else {
-        throw Exception('Failed to delete product');
+        print('Failed to delete product: ${response.statusCode} ${response.body}');
+        // Parse error to give a clear instruction to the user
+        if (response.body.contains('product.remove is not a function')) {
+           throw Exception('BACKEND ERROR: Old code running. Please RESTART your Node.js server to apply fixes.');
+        }
+        throw Exception('Failed to delete product: ${response.body}');
       }
     } catch (e) {
-      throw Exception('Failed to delete product: $e');
+      print('Error deleting product: $e');
+      throw e;
     }
   }
 }
