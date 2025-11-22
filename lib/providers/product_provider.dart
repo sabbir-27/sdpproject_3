@@ -34,11 +34,19 @@ class ProductProvider with ChangeNotifier {
       });
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        // Handle case where data might be directly the list or wrapped in 'data'
-        final List<dynamic> productData = (responseData['data'] != null) 
-            ? responseData['data'] 
-            : (responseData is List ? responseData : []); 
+        // Fix: Decode as dynamic because it could be List or Map
+        final dynamic responseData = json.decode(response.body);
+        
+        List<dynamic> productData = [];
+        
+        if (responseData is List) {
+          productData = responseData;
+        } else if (responseData is Map && responseData['data'] != null) {
+          productData = responseData['data'];
+        } else if (responseData is Map) {
+           // Fallback if it's a map but no 'data' key (unlikely if list expected)
+           // You might want to log this
+        }
             
         _products = productData.map((data) => Product.fromJson(data)).toList();
         notifyListeners();
@@ -59,29 +67,37 @@ class ProductProvider with ChangeNotifier {
     final url = Uri.parse('$_baseUrl/products');
     try {
       print('Adding product to $url');
+      final body = json.encode(product.toJson());
+      print('Request Body: $body'); // Debug print
+
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
           if (token != null) 'Authorization': 'Bearer $token',
         },
-        body: json.encode(product.toJson()),
+        body: body,
       );
 
       if (response.statusCode == 201) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
+        final dynamic responseData = json.decode(response.body);
         // Handle wrapped 'data' or direct object
-        final productJson = responseData['data'] ?? responseData;
+        final productJson = (responseData is Map && responseData.containsKey('data')) 
+            ? responseData['data'] 
+            : responseData;
+            
         final newProduct = Product.fromJson(productJson);
         _products.add(newProduct);
         notifyListeners();
       } else {
         print('Failed to add product: ${response.statusCode} ${response.body}');
-        throw Exception('Failed to add product');
+        // Throw detailed error message to display in UI
+        throw Exception('Failed to add product: ${response.body}');
       }
     } catch (e) {
       print('Error adding product: $e');
-      throw Exception('Failed to add product: $e');
+      // Re-throw so UI can catch it
+      throw e;
     }
   }
 
@@ -101,8 +117,11 @@ class ProductProvider with ChangeNotifier {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = json.decode(response.body);
-        final productJson = responseData['data'] ?? responseData;
+        final dynamic responseData = json.decode(response.body);
+        final productJson = (responseData is Map && responseData.containsKey('data')) 
+            ? responseData['data'] 
+            : responseData;
+            
         final updatedProduct = Product.fromJson(productJson);
         final index = _products.indexWhere((p) => p.id == product.id);
         if (index != -1) {

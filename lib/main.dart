@@ -26,7 +26,7 @@ import 'screens/customer/bkash_payment_screen.dart';
 import 'screens/customer/card_payment_screen.dart';
 import 'screens/customer/nagad_payment_screen.dart';
 import 'screens/customer/rocket_payment_screen.dart';
-import 'screens/customer/profile_screen.dart'; // Imported ProfileScreen
+import 'screens/customer/profile_screen.dart';
 
 // --- Shop Owner Screens ---
 import 'screens/shop_owner/dashboard_screen.dart' as owner;
@@ -39,7 +39,7 @@ import 'screens/shop_owner/accounting_screen.dart';
 import 'screens/shop_owner/charts_screen.dart';
 import 'screens/shop_owner/trends_screen.dart';
 import 'screens/shop_owner/qr_code_screen.dart';
-import 'screens/shop_owner/settings_screen.dart'; // Imported SettingsScreen
+import 'screens/shop_owner/settings_screen.dart';
 
 // --- Police Screens ---
 import 'screens/police/dashboard_screen.dart' as police;
@@ -74,8 +74,8 @@ class SmartShopConnectApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProxyProvider<AuthProvider, ProductProvider>(
-          create: (_) => ProductProvider(null, []),
-          update: (context, auth, previous) => ProductProvider(auth, previous?.products ?? []),
+          create: (_) => ProductProvider(null, const []),
+          update: (context, auth, previous) => ProductProvider(auth, previous?.products ?? const []),
         ),
         ChangeNotifierProvider(create: (_) => AccountingStore()),
         ChangeNotifierProvider(create: (_) => ComplaintProvider()),
@@ -85,7 +85,8 @@ class SmartShopConnectApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: AppThemes.lightTheme,
 
-        initialRoute: '/login', 
+        // AuthWrapper handles initial redirection based on login state
+        home: const AuthWrapper(), 
 
         routes: {
           '/login': (_) => const LoginScreen(),
@@ -103,19 +104,19 @@ class SmartShopConnectApp extends StatelessWidget {
           '/qr_scanner': (_) => const QrScannerScreen(),
           '/notifications': (_) => const NotificationsScreen(),
           '/favorites': (_) => const FavoritesScreen(),
-          '/profile': (_) => const ProfileScreen(), // Added Profile Route
+          '/profile': (_) => const ProfileScreen(),
 
           '/owner_dashboard': (_) => const owner.DashboardScreen(),
           '/products': (_) => const ProductsScreen(),
           '/orders': (_) => const OrdersScreen(),
           '/owner_chat': (_) => const ChatScreen(),
           '/owner_chat_list': (_) => const ChatListScreen(),
-          '/owner_complaints': (_) => OwnerComplaintsScreen(),
+          '/owner_complaints': (_) => const OwnerComplaintsScreen(), // Made const
           '/owner_accounting': (_) => const AccountingScreen(),
           '/owner_charts': (_) => const ChartsScreen(),
           '/owner_trends': (_) => const TrendsScreen(),
           '/owner_qr_code': (_) => const QrCodeScreen(),
-          '/owner_settings': (_) => const SettingsScreen(), // Added Settings Route
+          '/owner_settings': (_) => const SettingsScreen(),
 
           '/police_dashboard': (_) => const police.PoliceDashboardScreen(),
           '/police_map': (_) => const PoliceMapScreen(),
@@ -137,6 +138,26 @@ class SmartShopConnectApp extends StatelessWidget {
           '/police_shop_details': (_) => const ShopDetailsForPoliceScreen(),
         },
       ),
+    );
+  }
+}
+
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Consumer<AuthProvider>(
+      builder: (context, auth, _) {
+        if (auth.isAuthenticated) {
+          if (auth.role == 'customer') return const HomeScreen();
+          if (auth.role == 'shopOwner') return const owner.DashboardScreen();
+          if (auth.role == 'admin') return const police.PoliceDashboardScreen();
+          return const HomeScreen();
+        } else {
+          return const LoginScreen();
+        }
+      },
     );
   }
 }

@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../models/product.dart';
-import '../../models/shop.dart'; // Import the shop model
+import '../../models/shop.dart';
 import '../../providers/product_provider.dart';
 import '../../theme/app_colors.dart';
 
@@ -16,14 +16,7 @@ class ShopDetailScreen extends StatefulWidget {
 
 class _ShopDetailScreenState extends State<ShopDetailScreen> {
   
-  @override
-  void initState() {
-    super.initState();
-    // Fetch products when the screen loads
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<ProductProvider>(context, listen: false).fetchProducts();
-    });
-  }
+  // Removed initState as requested
 
   // Helper for smart, clamped responsive sizing
   double _getClampedResponsiveSize(
